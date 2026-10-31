@@ -82,12 +82,13 @@ async function backupReminder(cards) {
 
 // ---------- Mehr: Sicherung, Papierkorb, Infos ----------
 async function renderMehr() {
+  // Meldung sofort leeren (vor dem Warten), damit eine neue Meldung nicht überschrieben wird.
+  $('backup-msg').textContent = '';
+  $('backup-msg').classList.remove('err');
   const last = await store.lastBackupAt();
   $('backup-info').textContent = last
     ? `Letzte Sicherung: ${new Date(last).toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' })}. Speichere sie z. B. in der Dateien-App oder in OneDrive.`
     : 'Noch keine Sicherung. Speichere regelmäßig eine, z. B. in der Dateien-App oder in OneDrive. Solange es noch keinen Abgleich zwischen Geräten gibt, ist das dein Schutz, falls das Handy die Daten verliert.';
-  $('backup-msg').textContent = '';
-  $('backup-msg').classList.remove('err');
   await renderTrash();
   renderFacts();
 }

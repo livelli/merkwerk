@@ -34,11 +34,14 @@ const server = http.createServer((req, res) => {
   const offlineTitle = await page.textContent('#h-heute').catch(() => null);
   const offlineVisible = await page.isVisible('#view-mehr');
   const status = await page.textContent('#net-status');
+  await page.evaluate(() => document.fonts.ready);
+  const fontsOffline = await page.evaluate(() => document.fonts.check('16px "IBM Plex Sans"') && [...document.fonts].some((f) => f.family.includes('IBM Plex Sans') && f.status === 'loaded'));
+  const external = await page.evaluate(() => performance.getEntriesByType('resource').map((e) => e.name).filter((n) => !n.startsWith(location.origin)));
   await page.screenshot({ path: path.join(process.env.SHOT_DIR || '/tmp', 'merkwerk-phase0.png') });
   await browser.close(); server.close();
-  const result = { title, ver, schema, stores, offlineTitle, offlineVisible, status, errors };
+  const result = { title, ver, schema, stores, offlineTitle, offlineVisible, status, fontsOffline, external, errors };
   console.log(JSON.stringify(result, null, 1));
-  const ok = title === 'Heute' && ver && schema === 'v1' && stores.length === 4 && offlineTitle === 'Heute' && offlineVisible && errors.length === 0;
+  const ok = title === 'Heute' && ver && schema === 'v1' && stores.length === 4 && offlineTitle === 'Heute' && offlineVisible && status === 'offline' && fontsOffline && external.length === 0 && errors.length === 0;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FEHLER');
   process.exit(ok ? 0 : 1);
 })().catch((e) => { console.error(e); server.close(); process.exit(1); });

@@ -34,8 +34,10 @@ const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let deferredPrompt = null;
 
+// Der Hinweis lässt sich nur für die aktuelle Sitzung schließen, damit er wiederkommt,
+// solange die App nicht installiert ist.
 function installDismissed() {
-  try { return localStorage.getItem('merkwerk.installHint') === 'closed'; } catch { return false; }
+  try { return sessionStorage.getItem('merkwerk.installHint') === 'closed'; } catch { return false; }
 }
 function showInstallHint(text, withButton) {
   if (isStandalone() || installDismissed()) return;
@@ -45,7 +47,7 @@ function showInstallHint(text, withButton) {
 }
 $('install-close').addEventListener('click', () => {
   $('install-banner').hidden = true;
-  try { localStorage.setItem('merkwerk.installHint', 'closed'); } catch {}
+  try { sessionStorage.setItem('merkwerk.installHint', 'closed'); } catch {}
 });
 addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -60,7 +62,7 @@ $('install-btn').addEventListener('click', async () => {
   $('install-banner').hidden = true;
 });
 if (isIos && !isStandalone()) {
-  showInstallHint('Tippe unten auf Teilen und dann auf „Zum Home-Bildschirm“. Lege deine Sets erst danach an, sonst sind sie in der installierten App nicht da.', false);
+  showInstallHint('Tippe auf das Teilen-Symbol (Quadrat mit Pfeil) und dann auf „Zum Home-Bildschirm“. Lege deine Sets erst danach an, sonst sind sie in der installierten App nicht da.', false);
 }
 
 // ---------- Service Worker (offline + Updates) ----------
@@ -74,6 +76,10 @@ if ('serviceWorker' in navigator) {
       $('update-btn').onclick = () => worker.postMessage('skipWaiting');
     };
     if (reg.waiting && navigator.serviceWorker.controller) offerUpdate(reg.waiting);
+    // Installierte Apps (v. a. iPhone) laden selten neu: beim Zurückkehren nach Updates suchen.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') reg.update().catch(() => {});
+    });
     reg.addEventListener('updatefound', () => {
       const nw = reg.installing;
       nw.addEventListener('statechange', () => {

@@ -1,5 +1,6 @@
 // Prüft: alle Dateien im Offline-Cache existieren, Versionen stimmen überein, Manifest gültig.
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 const sw = readFileSync('sw.js', 'utf8');
 const shell = [...sw.matchAll(/^\s+'([^']+)',$/gm)].map((m) => m[1]).filter((p) => p !== './');
 let fail = 0;
@@ -11,5 +12,10 @@ const man = JSON.parse(readFileSync('manifest.webmanifest', 'utf8'));
 for (const i of man.icons) if (!existsSync(i.src)) { console.error('Icon fehlt:', i.src); fail++; }
 if (man.start_url !== './' || man.scope !== './') { console.error('start_url/scope müssen relativ sein'); fail++; }
 for (const js of ['js/app.js', 'js/db.js', 'js/version.js']) if (!shell.includes(js)) { console.error('nicht im Cache:', js); fail++; }
+for (const js of ['sw.js', ...shell.filter((p) => p.endsWith('.js'))]) {
+  try { execFileSync(process.execPath, ['--check', js]); } catch { console.error('Syntaxfehler:', js); fail++; }
+}
+const html = readFileSync('index.html', 'utf8');
+if (/https?:\/\//.test(html.replace(/<meta[^>]*>/g, ''))) { console.error('index.html lädt etwas von fremden Servern'); fail++; }
 console.log(fail ? `${fail} Fehler` : `ok: ${shell.length} Dateien, Version ${appVer}`);
 process.exit(fail ? 1 : 0);

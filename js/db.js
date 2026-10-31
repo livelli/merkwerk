@@ -13,8 +13,12 @@ export const migrations = {
     const cards = db.createObjectStore('cards', { keyPath: 'id' });
     cards.createIndex('setId', 'setId');
     cards.createIndex('updatedAt', 'updatedAt');
-    const progress = db.createObjectStore('progress', { keyPath: 'cardId' });
+    // Lernstand: eigener Datensatz mit id, cardId, updatedAt (und später deletedAt
+    // als Löschmarkierung statt echtem Löschen, damit der Sync Löschungen kennt).
+    const progress = db.createObjectStore('progress', { keyPath: 'id' });
+    progress.createIndex('cardId', 'cardId', { unique: true });
     progress.createIndex('due', 'due');
+    progress.createIndex('updatedAt', 'updatedAt');
     db.createObjectStore('meta', { keyPath: 'key' });
   },
 };
@@ -34,9 +38,15 @@ export function openDb(idb = globalThis.indexedDB) {
   dbPromise = new Promise((resolve, reject) => {
     const req = idb.open(DB_NAME, SCHEMA_VERSION);
     req.onupgradeneeded = (e) => runMigrations(req.result, req.transaction, e.oldVersion, e.newVersion);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-    req.onblocked = () => reject(new Error('Merkwerk ist in einem anderen Tab offen. Bitte dort schließen.'));
+    req.onsuccess = () => {
+      const db = req.result;
+      // Neue App-Version in einem anderen Tab will die Datenbank umbauen: hier loslassen.
+      db.onversionchange = () => { db.close(); dbPromise = null; };
+      resolve(db);
+    };
+    req.onerror = () => { dbPromise = null; reject(req.error); };
+    // "blocked" heißt nur: ein alter Tab hält die Datenbank noch. Wir warten einfach.
+    req.onblocked = () => console.warn('Merkwerk wartet, bis ein anderer Tab geschlossen ist.');
   });
   return dbPromise;
 }

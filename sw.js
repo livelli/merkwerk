@@ -2,13 +2,13 @@
 // Alle Pfade sind relativ, damit die App unter livelli.github.io/merkwerk/ funktioniert.
 const CACHE_VERSION = '0.1.0';
 const CACHE = `merkwerk-${CACHE_VERSION}`;
-const FONT_CACHE = 'merkwerk-fonts';
 
 const SHELL = [
   './',
   'index.html',
   'manifest.webmanifest',
   'css/app.css',
+  'css/fonts.css',
   'js/app.js',
   'js/db.js',
   'js/version.js',
@@ -16,17 +16,25 @@ const SHELL = [
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',
   'icons/apple-touch-icon.png',
+  'fonts/plex-mono-latin-0bc96c.woff2',
+  'fonts/plex-mono-latin-1b581b.woff2',
+  'fonts/plex-mono-latin-ext-93cfae.woff2',
+  'fonts/plex-mono-latin-ext-a73533.woff2',
+  'fonts/plex-sans-latin-868a23.woff2',
+  'fonts/plex-sans-latin-ext-632855.woff2',
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+  event.waitUntil(caches.open(CACHE).then((c) =>
+    // cache: 'reload' umgeht den Browser-Cache, damit ein Update wirklich neue Dateien bekommt.
+    c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))));
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys
-      .filter((k) => k.startsWith('merkwerk-') && k !== CACHE && k !== FONT_CACHE)
+      .filter((k) => k.startsWith('merkwerk') && k !== CACHE)
       .map((k) => caches.delete(k)));
     await self.clients.claim();
   })());
@@ -40,23 +48,6 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-
-  // Schriften von Google: einmal laden, dann aus dem Cache.
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    event.respondWith((async () => {
-      const cache = await caches.open(FONT_CACHE);
-      const hit = await cache.match(req);
-      if (hit) return hit;
-      try {
-        const res = await fetch(req);
-        cache.put(req, res.clone());
-        return res;
-      } catch {
-        return new Response('', { status: 504 });
-      }
-    })());
-    return;
-  }
 
   if (url.origin !== self.location.origin) return;
 

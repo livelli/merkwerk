@@ -13,9 +13,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -44,7 +42,7 @@
     <main id="main" tabindex="-1">
       <section class="view" id="view-heute" aria-labelledby="h-heute">
         <h1 id="h-heute">Heute</h1>
-        <div class="counters" aria-label="Lernstand">
+        <div class="counters" role="group" aria-label="Lernstand">
           <div class="counter"><span class="num ok" id="c-known">0</span><span class="lbl">gekonnt</span></div>
           <div class="counter"><span class="num accent" id="c-learning">0</span><span class="lbl">am Lernen</span></div>
           <div class="counter"><span class="num" id="c-new">0</span><span class="lbl">offen</span></div>
@@ -73,9 +71,9 @@
           <div><dt>Offline bereit</dt><dd id="f-offline"></dd></div>
           <div><dt>Speicher geschützt</dt><dd id="f-persist"></dd></div>
           <div><dt>Datenformat</dt><dd class="mono" id="f-schema"></dd></div>
-          <div><dt>Stimmen zum Vorlesen</dt><dd id="f-voices"></dd></div>
+          <div><dt>Vorlese-Stimmen auf diesem Gerät</dt><dd id="f-voices"></dd></div>
         </dl>
-        <p class="hint">Deine Vokabeln bleiben auf diesem Gerät. Sie werden nie in das öffentliche Repository hochgeladen.</p>
+        <p class="hint">Deine Vokabeln bleiben auf diesem Gerät. Sie werden nie öffentlich ins Internet gestellt.</p>
       </section>
     </main>
 

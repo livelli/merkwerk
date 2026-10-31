@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Merkwerk</title>
+  <meta name="description" content="Merkwerk – Vokabeln effizient und mit korrekter Schreibweise lernen.">
+  <meta name="theme-color" content="#0E1116">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Merkwerk">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="6" fill="none" stroke="currentColor" stroke-width="2.5"></rect><path d="M9 22V10l7 7 7-7v12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></path></svg>
+        <span>Merkwerk</span>
+      </div>
+      <div class="status" id="net-status" role="status" aria-live="polite"></div>
+    </header>
+
+    <div class="banner" id="update-banner" hidden>
+      <span>Eine neue Version ist da.</span>
+      <button class="btn btn-small" id="update-btn" type="button">Aktualisieren</button>
+    </div>
+
+    <div class="banner banner-info" id="install-banner" hidden>
+      <div id="install-text"></div>
+      <button class="btn btn-small" id="install-btn" type="button" hidden>Installieren</button>
+      <button class="icon-btn" id="install-close" type="button" aria-label="Hinweis schließen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+    </div>
+
+    <main id="main" tabindex="-1">
+      <section class="view" id="view-heute" aria-labelledby="h-heute">
+        <h1 id="h-heute">Heute</h1>
+        <div class="counters" aria-label="Lernstand">
+          <div class="counter"><span class="num ok" id="c-known">0</span><span class="lbl">gekonnt</span></div>
+          <div class="counter"><span class="num accent" id="c-learning">0</span><span class="lbl">am Lernen</span></div>
+          <div class="counter"><span class="num" id="c-new">0</span><span class="lbl">offen</span></div>
+        </div>
+        <div class="bar" aria-hidden="true"><div class="bar-ok" style="flex-grow:0"></div><div class="bar-acc" style="flex-grow:0"></div><div class="bar-rest" style="flex-grow:1"></div></div>
+        <div class="empty">
+          <p class="empty-title">Noch keine Vokabeln</p>
+          <p>Sobald du ein Set anlegst, steht hier deine Tagesportion: neue Wörter, Wiederholungen und wie lange es ungefähr dauert.</p>
+        </div>
+      </section>
+
+      <section class="view" id="view-sets" aria-labelledby="h-sets" hidden>
+        <h1 id="h-sets">Sets</h1>
+        <div class="empty">
+          <p class="empty-title">Noch keine Sets</p>
+          <p>Sets anlegen und Vokabeln importieren kommt in Phase 1.</p>
+        </div>
+        <button class="btn" type="button" disabled>Neues Set</button>
+      </section>
+
+      <section class="view" id="view-mehr" aria-labelledby="h-mehr" hidden>
+        <h1 id="h-mehr">Mehr</h1>
+        <dl class="facts">
+          <div><dt>Version</dt><dd class="mono" id="f-version"></dd></div>
+          <div><dt>Installiert</dt><dd id="f-installed"></dd></div>
+          <div><dt>Offline bereit</dt><dd id="f-offline"></dd></div>
+          <div><dt>Speicher geschützt</dt><dd id="f-persist"></dd></div>
+          <div><dt>Datenformat</dt><dd class="mono" id="f-schema"></dd></div>
+          <div><dt>Stimmen zum Vorlesen</dt><dd id="f-voices"></dd></div>
+        </dl>
+        <p class="hint">Deine Vokabeln bleiben auf diesem Gerät. Sie werden nie in das öffentliche Repository hochgeladen.</p>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="Hauptnavigation">
+      <button class="tab" type="button" data-view="heute" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg>
+        <span>Heute</span>
+      </button>
+      <button class="tab" type="button" data-view="sets">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="14" height="14" rx="2"></rect><path d="M7 3h12a2 2 0 012 2v12"></path></svg>
+        <span>Sets</span>
+      </button>
+      <button class="tab" type="button" data-view="mehr">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
+        <span>Mehr</span>
+      </button>
+    </nav>
+  </div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

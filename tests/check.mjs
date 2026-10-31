@@ -1,0 +1,15 @@
+// Prüft: alle Dateien im Offline-Cache existieren, Versionen stimmen überein, Manifest gültig.
+import { readFileSync, existsSync } from 'node:fs';
+const sw = readFileSync('sw.js', 'utf8');
+const shell = [...sw.matchAll(/^\s+'([^']+)',$/gm)].map((m) => m[1]).filter((p) => p !== './');
+let fail = 0;
+for (const p of shell) if (!existsSync(p)) { console.error('fehlt im Repo:', p); fail++; }
+const swVer = sw.match(/CACHE_VERSION = '([^']+)'/)[1];
+const appVer = readFileSync('js/version.js', 'utf8').match(/APP_VERSION = '([^']+)'/)[1];
+if (swVer !== appVer) { console.error(`Version sw.js ${swVer} != version.js ${appVer}`); fail++; }
+const man = JSON.parse(readFileSync('manifest.webmanifest', 'utf8'));
+for (const i of man.icons) if (!existsSync(i.src)) { console.error('Icon fehlt:', i.src); fail++; }
+if (man.start_url !== './' || man.scope !== './') { console.error('start_url/scope müssen relativ sein'); fail++; }
+for (const js of ['js/app.js', 'js/db.js', 'js/version.js']) if (!shell.includes(js)) { console.error('nicht im Cache:', js); fail++; }
+console.log(fail ? `${fail} Fehler` : `ok: ${shell.length} Dateien, Version ${appVer}`);
+process.exit(fail ? 1 : 0);

@@ -103,7 +103,7 @@ const check = (cond, msg) => { if (!cond) throw new Error('FEHLER: ' + msg); con
   await page.click('.tab[data-view="mehr"]');
   await page.waitForFunction(() => document.querySelector('#backup-info').textContent.length > 0);
   await page.setInputFiles('#backup-load', path.join(shots || '/tmp', 'bad.json'));
-  await page.waitForFunction(() => document.querySelector('#backup-msg').textContent.length > 0);
+  await page.waitForFunction(() => /keine Merkwerk-Sicherung/.test(document.querySelector('#backup-msg').textContent), null, { timeout: 5000 }).catch(() => {});
   const badMsg = await page.textContent('#backup-msg');
   check(badMsg.includes('keine Merkwerk-Sicherung'), 'falsche Datei abgelehnt: ' + badMsg);
   if (shots) await page.screenshot({ path: path.join(shots, 'p1-mehr.png'), fullPage: true });

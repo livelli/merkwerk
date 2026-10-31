@@ -1,6 +1,6 @@
 // Service Worker: macht Merkwerk offline nutzbar.
 // Alle Pfade sind relativ, damit die App unter livelli.github.io/merkwerk/ funktioniert.
-const CACHE_VERSION = '0.1.0';
+const CACHE_VERSION = '0.2.0';
 const CACHE = `merkwerk-${CACHE_VERSION}`;
 
 const SHELL = [
@@ -12,6 +12,11 @@ const SHELL = [
   'js/app.js',
   'js/db.js',
   'js/version.js',
+  'js/store.js',
+  'js/views.js',
+  'js/importer.js',
+  'js/backup.js',
+  'js/speech.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',

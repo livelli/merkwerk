@@ -78,3 +78,34 @@ export async function setMeta(key, value) {
     tx.onerror = () => reject(tx.error);
   });
 }
+
+export async function getAll(store) {
+  const db = await openDb();
+  return wrap(db.transaction(store).objectStore(store).getAll());
+}
+
+export async function get(store, key) {
+  const db = await openDb();
+  return wrap(db.transaction(store).objectStore(store).get(key));
+}
+
+export async function getAllByIndex(store, index, value) {
+  const db = await openDb();
+  return wrap(db.transaction(store).objectStore(store).index(index).getAll(value));
+}
+
+// Schreibt mehrere Datensätze in mehrere Stores in EINER Transaktion (alles oder nichts).
+// changes = { sets: [...], cards: [...] }, deletes = { cards: [ids] }
+export async function write(changes = {}, deletes = {}) {
+  const db = await openDb();
+  const stores = [...new Set([...Object.keys(changes), ...Object.keys(deletes)])];
+  const tx = db.transaction(stores, 'readwrite');
+  // Erst löschen, dann schreiben (sonst kollidieren eindeutige Indizes wie progress.cardId).
+  for (const [s, ids] of Object.entries(deletes)) for (const id of ids) tx.objectStore(s).delete(id);
+  for (const [s, rows] of Object.entries(changes)) for (const r of rows) tx.objectStore(s).put(r);
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error || new Error('Speichern abgebrochen'));
+  });
+}

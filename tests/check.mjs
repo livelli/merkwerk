@@ -11,7 +11,8 @@ if (swVer !== appVer) { console.error(`Version sw.js ${swVer} != version.js ${ap
 const man = JSON.parse(readFileSync('manifest.webmanifest', 'utf8'));
 for (const i of man.icons) if (!existsSync(i.src)) { console.error('Icon fehlt:', i.src); fail++; }
 if (man.start_url !== './' || man.scope !== './') { console.error('start_url/scope müssen relativ sein'); fail++; }
-for (const js of ['js/app.js', 'js/db.js', 'js/version.js']) if (!shell.includes(js)) { console.error('nicht im Cache:', js); fail++; }
+import { readdirSync } from 'node:fs';
+for (const js of readdirSync('js').filter((f) => f.endsWith('.js')).map((f) => 'js/' + f)) if (!shell.includes(js)) { console.error('nicht im Cache:', js); fail++; }
 for (const js of ['sw.js', ...shell.filter((p) => p.endsWith('.js'))]) {
   try { execFileSync(process.execPath, ['--check', js]); } catch { console.error('Syntaxfehler:', js); fail++; }
 }

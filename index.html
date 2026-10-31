@@ -41,30 +41,33 @@
 
     <main id="main" tabindex="-1">
       <section class="view" id="view-heute" aria-labelledby="h-heute">
-        <h1 id="h-heute">Heute</h1>
+        <h1 id="h-heute" tabindex="-1">Heute</h1>
         <div class="counters" role="group" aria-label="Lernstand">
           <div class="counter"><span class="num ok" id="c-known">0</span><span class="lbl">gekonnt</span></div>
           <div class="counter"><span class="num accent" id="c-learning">0</span><span class="lbl">am Lernen</span></div>
           <div class="counter"><span class="num" id="c-new">0</span><span class="lbl">offen</span></div>
         </div>
         <div class="bar" aria-hidden="true"><div class="bar-ok" style="flex-grow:0"></div><div class="bar-acc" style="flex-grow:0"></div><div class="bar-rest" style="flex-grow:1"></div></div>
-        <div class="empty">
-          <p class="empty-title">Noch keine Vokabeln</p>
-          <p>Sobald du ein Set anlegst, steht hier deine Tagesportion: neue Wörter, Wiederholungen und wie lange es ungefähr dauert.</p>
-        </div>
+        <div id="heute-body"></div>
       </section>
 
-      <section class="view" id="view-sets" aria-labelledby="h-sets" hidden>
-        <h1 id="h-sets">Sets</h1>
-        <div class="empty">
-          <p class="empty-title">Noch keine Sets</p>
-          <p>Sets anlegen und Vokabeln importieren kommt in Phase 1.</p>
-        </div>
-        <button class="btn" type="button" disabled>Neues Set</button>
-      </section>
+      <section class="view" id="view-sets" hidden></section>
 
       <section class="view" id="view-mehr" aria-labelledby="h-mehr" hidden>
-        <h1 id="h-mehr">Mehr</h1>
+        <h1 id="h-mehr" tabindex="-1">Mehr</h1>
+
+        <h2>Sicherung</h2>
+        <p class="hint" id="backup-info"></p>
+        <div class="row-actions">
+          <button class="btn" type="button" id="backup-save">Sicherung speichern</button>
+          <label class="btn btn-ghost file-btn">Sicherung einlesen<input type="file" id="backup-load" accept=".json,application/json"></label>
+        </div>
+        <p class="msg" id="backup-msg" role="status" aria-live="polite"></p>
+
+        <h2>Papierkorb</h2>
+        <div id="trash"></div>
+
+        <h2>Über diese App</h2>
         <dl class="facts">
           <div><dt>Version</dt><dd class="mono" id="f-version"></dd></div>
           <div><dt>Installiert</dt><dd id="f-installed"></dd></div>
